@@ -74,7 +74,7 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit();
 		ECS::SetUpIdentifier(entity, bitHolder, "Hello World Sign");
 	}
-	//link Sprite
+	//link Sprite		anim 1
 	{
 		auto attacks = File::LoadJSON("LinkAttacks.json");
 
@@ -105,7 +105,38 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 		ECS::SetUpIdentifier(entity, bitHolder, "link");
 		ECS::SetIsMainPlayer(entity, true);
 	}
-	//WASD sign
+	//auto link sprite	anim 1.1
+	{
+		auto attacks = File::LoadJSON("LinkAttacks.json");
+
+		auto entity = ECS::CreateEntity();
+
+		//add components
+		ECS::AttachComponent<Sprite>(entity);
+		ECS::AttachComponent<Transform>(entity);
+		ECS::AttachComponent<AnimationController>(entity);
+
+		//sets up components
+		std::string fileName = "spritesheets/LinkAttacks.png";
+		auto& animController = ECS::GetComponent<AnimationController>(entity);
+		animController.InitUVs(fileName);
+
+		//Add anims
+		animController.AddAnimation(attacks["left"]);
+		animController.AddAnimation(attacks["right"]);
+
+		animController.SetActiveAnim(1);
+
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 100, 100, true, &animController);
+
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(0.f, 0.f, 100.f));
+
+		//set up identitier
+		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit() | EntityIdentifier::AnimationBit();
+		ECS::SetUpIdentifier(entity, bitHolder, "link Auto");
+		autoLinkEnt = entity;
+	}
+	//WASD sign			anim 2
 	{
 		auto entity = ECS::CreateEntity();
 
@@ -147,7 +178,6 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 		ECS::SetUpIdentifier(entity, bitHolder, "WASD Sign");
 	}
 
-	//EntityIdentifier::MainPlayer()
 	ECS::GetComponent<HorizontalScroll>(EntityIdentifier::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(EntityIdentifier::MainPlayer()));
 	ECS::GetComponent<VerticalScroll>(EntityIdentifier::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(EntityIdentifier::MainPlayer()));
 }
@@ -160,4 +190,8 @@ void Challenge::SetAnim(int anim) {
 int Challenge::GetAnim() {
 	auto& animController = m_sceneReg->get<AnimationController>(EntityIdentifier::MainPlayer());
 	return animController.GetActiveAnim();
+}
+
+unsigned int Challenge::GetAutoLink() {
+	return autoLinkEnt;
 }

@@ -98,6 +98,8 @@ public:
 	mat2() {}
 	//sets row1 and row2
 	mat2(vec2 _row1, vec2 _row2);
+	//with rotation
+	mat2(float rot);
 
 	void Add(mat2 m);
 	void Subtract(mat2 m);

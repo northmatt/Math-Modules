@@ -26,6 +26,7 @@ public:
 	vec2 Normailize();
 
 	vec2 Project(vec2 b);
+	vec2 Rotate(float rot);
 
 	//Operator overload for indexing using []
 	float operator[](int i);
@@ -60,6 +61,7 @@ public:
 	vec3 Normailize();
 
 	vec3 Project(vec3 v2);
+	vec3 RotateZ(float rot);
 
 	//Operator overload for indexing using []
 	float operator[](int i);

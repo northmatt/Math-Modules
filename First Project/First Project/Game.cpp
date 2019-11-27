@@ -82,6 +82,18 @@ bool Game::Run()
 			//Accept all input
 			AcceptInput();
 		}
+
+		Transform& trans = m_register->get<Transform>(sceneChallenge->GetAutoLink());
+		AnimationController& anim = m_register->get<AnimationController>(sceneChallenge->GetAutoLink());
+
+		if (!(-50 <= trans.GetPositionX() && trans.GetPositionX() <= 50))
+			anim.SetActiveAnim(anim.GetActiveAnim() == 1 ? 0 : 1);
+
+		vec3 velocity = vec3(anim.GetActiveAnim() * 2 - 1, 0, 0);
+		velocity.Normailize();
+		velocity = velocity * (50 * Timer::deltaTime);
+
+		trans.SetPosition(trans.GetPosition() + velocity);
 	}
 
 	return true;

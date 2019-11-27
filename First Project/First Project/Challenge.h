@@ -11,8 +11,11 @@ public:
 
 	void SetAnim(int anim);
 	int GetAnim();
+	unsigned int GetAutoLink();
 
 	//ImGUI Editor
 	void CreateTab();
 	void CreateEditor();
+private:
+	unsigned int autoLinkEnt;
 };

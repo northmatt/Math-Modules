@@ -5,6 +5,11 @@ mat2::mat2(vec2 _row1, vec2 _row2) {
 	row2 = _row2;
 }
 
+mat2::mat2(float rot) {
+	row1 = vec2(cos(rot), -sin(rot));
+	row2 = vec2(sin(rot), cos(rot));
+}
+
 mat2 mat2::operator+(mat2 m) {
 	return mat2(row1 + m.row1, row2 + m.row2);
 }
@@ -28,7 +33,7 @@ mat2 mat2::operator*(mat2 m) {
 }
 
 vec2 mat2::operator*(vec2 v2) {
-	return vec2(row1.Dot(v2), row1.Dot(v2));
+	return vec2(row1.Dot(v2), row2.Dot(v2));
 }
 
 vec2 mat2::operator[](int i) {

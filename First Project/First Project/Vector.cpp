@@ -43,6 +43,11 @@ vec2 vec2::Project(vec2 b) {
 	return b * (Dot(b) / b.GetMagnitudeSquared());
 }
 
+vec2 vec2::Rotate(float rot) {
+	double c{ cos(rot) }, s{ sin(rot) };
+	return vec2(x * c - y * s, x * s + y * c);
+}
+
 float vec2::operator[](int i) {
 	//used for indexing
 	//i == 0 then x
@@ -115,6 +120,11 @@ vec3 vec3::Normailize() {
 
 vec3 vec3::Project(vec3 v2) {
 	return v2 * (Dot(v2) / v2.GetMagnitudeSquared());
+}
+
+vec3 vec3::RotateZ(float rot) {
+	double c{ cos(rot) }, s{ sin(rot) };
+	return vec3(x * c - y * s, x * s + y * c, z);
 }
 
 float vec3::operator[](int i) {
