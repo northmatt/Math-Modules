@@ -9,6 +9,8 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 	//attach register
 	ECS::AttachRegister(m_sceneReg);
 
+	std::cout << "Press R to change rotation";
+
 	//camera
 	{
 		//aspect ratio

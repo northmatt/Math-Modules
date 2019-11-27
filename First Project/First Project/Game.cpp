@@ -2,7 +2,6 @@
 
 #include <random>
 
-
 Game::~Game()
 {
 	//If window isn't equal to nullptr
@@ -209,8 +208,8 @@ void Game::GamepadTrigger(XInputController* con) {
 void Game::KeyboardHold()
 {
 	//Keyboard button held
-	if (Input::GetKey(Key::A) || Input::GetKey(Key::S) || Input::GetKey(Key::D) || Input::GetKey(Key::W)) {
-		float speed = 50;
+	//if (Input::GetKey(Key::A) || Input::GetKey(Key::S) || Input::GetKey(Key::D) || Input::GetKey(Key::W)) {
+		float speed = 80;
 		auto& tran = m_register->get<Transform>(EntityIdentifier::MainPlayer());
 		vec3 simpleVec{ 0, 0, 0 };
 
@@ -224,14 +223,32 @@ void Game::KeyboardHold()
 		if (Input::GetKey(Key::S))
 			simpleVec.y -= 1;
 
-		float simMag = simpleVec.GetMagnitude();
+		/*float simMag = simpleVec.GetMagnitude();
 		if (simMag != 0) {
 			simpleVec = simpleVec / simMag;
 			simpleVec = simpleVec * (speed * Timer::deltaTime);
 
 			tran.SetPosition(tran.GetPosition() + simpleVec);
+		}*/
+		simpleVec.Normailize();
+
+		//Force of gravity = mass * gravity. how could you miss that?
+		vec3 totalForce = vec3(0.f, -9.f * m_mass, 0.f);
+		totalForce = totalForce + simpleVec * speed;
+
+		vec3 acceleration = totalForce / m_mass;
+
+		acceleration = acceleration * Timer::deltaTime;
+
+		m_velocity.x = min(max(m_velocity.x + (acceleration.x), -21), 21);
+		m_velocity.y = min(max(m_velocity.y + (acceleration.y), -21), 21);
+
+		tran.SetPosition(tran.GetPosition() + (m_velocity + acceleration * 0.5f) * Timer::deltaTime);
+	//}
+		if (Input::GetKey(Key::R)) {
+			vec2 test = { mosPos.x - BackEnd::GetWindowWidth() / 2, mosPos.y - BackEnd::GetWindowHeight() / 2 };
+			tran.SetRotationAngleZ(atan2(test.x, test.y));
 		}
-	}
 }
 
 void Game::KeyboardDown()
@@ -256,7 +273,8 @@ void Game::KeyboardUp()
 
 void Game::MouseMotion(SDL_MouseMotionEvent evnt)
 {
-//	printf("Mouse moved (%f, %f)\n", float(evnt.x), float(evnt.y));
+	//printf("Mouse moved (%f, %f)\n", float(evnt.x), float(evnt.y));
+	mosPos = { float(evnt.x), float(evnt.y) };
 
 	if (m_guiActive)
 	{

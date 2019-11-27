@@ -92,6 +92,9 @@ private:
 	bool m_wheel = false;
 
 	Challenge* sceneChallenge = nullptr;
+	vec3 m_velocity = vec3(0.f, 0.f, 0.f);
+	float m_mass = 7.f;
+	ImVec2 mosPos{ 0, 0 };
 };
 
 
