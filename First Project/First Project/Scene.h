@@ -97,6 +97,16 @@ inline void to_json(nlohmann::json& j, const Scene& scene)
 			j[std::to_string(counter)]["HealthBar"] = scene.GetScene()->get<HealthBar>(entity);
 		}
 
+		//Hori Scroll saving
+		if (identity & EntityIdentifier::HoriScrollCameraBit()) {
+			j[std::to_string(counter)]["HoriScrollCam"] = scene.GetScene()->get<HorizontalScroll>(entity);
+		}
+
+		//Vert Scroll saving
+		if (identity & EntityIdentifier::VertScrollCameraBit()) {
+			j[std::to_string(counter)]["VertScrollCam"] = scene.GetScene()->get<VerticalScroll>(entity);
+		}
+
 		//For each loop increase the counter
 		counter++;
 	}
@@ -116,6 +126,10 @@ inline void from_json(const nlohmann::json& j, Scene& scene)
 
 	//Reference to the registry
 	auto &reg = *scene.GetScene();
+
+	//Is there a hori scroll
+	bool scrollHori = false;
+	bool scrollVert = false;
 	
 	//Allows you to create each entity
 	for (unsigned i = 0; i < numEntities; i++)
@@ -210,6 +224,33 @@ inline void from_json(const nlohmann::json& j, Scene& scene)
 			//sets healthbar to the saved version
 			reg.get<HealthBar>(entity) = j["Scene"][std::to_string(i)]["HealthBar"];
 		}
+
+		if (identity & EntityIdentifier::HoriScrollCameraBit()) {
+			reg.assign<HorizontalScroll>(entity);
+
+			reg.get<HorizontalScroll>(entity) = j["Scene"][std::to_string(i)]["HoriScrollCam"];
+
+			scrollHori = true;
+		}
+
+		if (identity & EntityIdentifier::VertScrollCameraBit()) {
+			reg.assign<VerticalScroll>(entity);
+
+			reg.get<VerticalScroll>(entity) = j["Scene"][std::to_string(i)]["VertScrollCam"];
+
+			scrollVert = true;
+		}
+	}
+
+	if (scrollHori) {
+		reg.get<HorizontalScroll>(EntityIdentifier::MainCamera()).SetCam(&reg.get<Camera>(EntityIdentifier::MainCamera()));
+
+		reg.get<HorizontalScroll>(EntityIdentifier::MainCamera()).SetFocus(&reg.get<Transform>(EntityIdentifier::MainPlayer()));
+	}
+	if (scrollVert) {
+		reg.get<VerticalScroll>(EntityIdentifier::MainCamera()).SetCam(&reg.get<Camera>(EntityIdentifier::MainCamera()));
+
+		reg.get<VerticalScroll>(EntityIdentifier::MainCamera()).SetFocus(&reg.get<Transform>(EntityIdentifier::MainPlayer()));
 	}
 }
 

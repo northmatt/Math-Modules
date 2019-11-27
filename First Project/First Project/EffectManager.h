@@ -36,6 +36,11 @@ public:
 	//*Runs at program termination
 	~EffectManager();
 
+	//ImGUI Editor
+	static void CreateTabs();
+	static void CreateTab(Selectable &s1, int index);
+	static void CreateEditor(int index);
+
 	//Initialize effect manager
 	static void InitEffectManager(unsigned width, unsigned height);
 
@@ -85,6 +90,9 @@ public:
 	static int GetSelectiveColorHandle();
 	static int GetBloomHandle();
 private:
+	static Selectable m_selectable;
+	static Selectable m_funSettings;
+
 	//has there been one buffer initialized?
 	static bool m_effectsInit;
 	//Number of effects

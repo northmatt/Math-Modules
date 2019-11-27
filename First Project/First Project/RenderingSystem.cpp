@@ -49,6 +49,28 @@ void RenderingSystem::Update(entt::registry* reg)
 		//Unbinds the shader
 		drawShader.Unbind();
 	}
+
+	auto view2_1 = reg->view<HorizontalScroll>();
+
+	//Loops through all the entities within view3
+	for (auto entity : view2_1) {
+		//Grabs a reference to the Camera component (in x entity)
+		auto& scrollX = view2_1.get(entity);
+
+		//Updates the camera
+		scrollX.Update();
+	}
+
+	auto view2_2 = reg->view<VerticalScroll>();
+
+	//Loops through all the entities within view3
+	for (auto entity : view2_2) {
+		//Grabs a reference to the Camera component (in x entity)
+		auto& scrollY = view2_2.get(entity);
+
+		//Updates the camera
+		scrollY.Update();
+	}
 	/*
 	auto view3 = reg->view<HealthBar>();
 	//loops through all entities in view3 and displays their health

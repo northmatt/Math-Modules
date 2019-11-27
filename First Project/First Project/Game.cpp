@@ -47,7 +47,7 @@ void Game::InitGame()
 
 	//Init the scene
 	m_activeScene->InitScene(float(BackEnd::GetWindowWidth()), float(BackEnd::GetWindowHeight()));
-	//*m_activeScene = File::LoadJSON("Scene of Two.json");
+	//*m_activeScene = File::LoadJSON("Chellenging Scene.json");
 
 	m_register = m_activeScene->GetScene();
 
@@ -179,7 +179,7 @@ void Game::GamepadStick(XInputController* con) {
 	con->GetSticks(sticks);
 
 	float speed = 50;
-	auto& tran = m_register->get<Transform>(sceneChallenge->GetLink());
+	auto& tran = m_register->get<Transform>(EntityIdentifier::MainPlayer());
 	vec3 simpleVec{ sticks[0].x, sticks[0].y, 0 };
 
 	if (simpleVec.x != 0 && simpleVec.y != 0) {
@@ -211,7 +211,7 @@ void Game::KeyboardHold()
 	//Keyboard button held
 	if (Input::GetKey(Key::A) || Input::GetKey(Key::S) || Input::GetKey(Key::D) || Input::GetKey(Key::W)) {
 		float speed = 50;
-		auto& tran = m_register->get<Transform>(sceneChallenge->GetLink());
+		auto& tran = m_register->get<Transform>(EntityIdentifier::MainPlayer());
 		vec3 simpleVec{ 0, 0, 0 };
 
 		if (Input::GetKey(Key::A))
@@ -226,8 +226,8 @@ void Game::KeyboardHold()
 
 		float simMag = simpleVec.GetMagnitude();
 		if (simMag != 0) {
-			simpleVec = simpleVec.operator/(simMag);
-			simpleVec = simpleVec.operator*(speed * Timer::deltaTime);
+			simpleVec = simpleVec / simMag;
+			simpleVec = simpleVec * (speed * Timer::deltaTime);
 
 			tran.SetPosition(tran.GetPosition() + simpleVec);
 		}

@@ -153,6 +153,12 @@
     <ClInclude Include="Challenge.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HorizontalScroll.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VerticalScroll.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationController.cpp">
@@ -282,6 +288,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Challenge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HorizontalScroll.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VerticalScroll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

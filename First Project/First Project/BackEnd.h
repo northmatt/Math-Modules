@@ -7,6 +7,7 @@
 #include "Timer.h"
 #include "Input.h"
 #include "SceneEditor.h"
+#include "Challenge.h"
 #include "RenderingSystem.h"
 #include "AnimationSystem.h"
 

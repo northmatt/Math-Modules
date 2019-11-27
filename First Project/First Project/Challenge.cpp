@@ -1,7 +1,6 @@
 #include "Challenge.h"
 
-Challenge::Challenge(std::string name) {
-}
+Challenge::Challenge(std::string name) : Scene(name) {}
 
 void Challenge::InitScene(float windowWidth, float windowHeight) {
 	//Dynamically allocates register
@@ -17,17 +16,24 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 
 		//create camera entity
 		auto entity = ECS::CreateEntity();
-		EntityIdentifier::MainCamera(entity);
 
 		//create orthorgraphic camera
 		ECS::AttachComponent<Camera>(entity);
+		ECS::AttachComponent<HorizontalScroll>(entity);
+		ECS::AttachComponent<VerticalScroll>(entity);
 		vec4 temp = ECS::GetComponent<Camera>(entity).GetOrthoSize();
 		ECS::GetComponent<Camera>(entity).SetWindowSize(vec2(windowWidth, windowHeight));
 		ECS::GetComponent<Camera>(entity).Orthographic(aspectRatio, temp.x, temp.y, temp.z, temp.w, -100, 100);
 
+		//attaches cam to vertical scroll
+		ECS::GetComponent<HorizontalScroll>(entity).SetCam(&ECS::GetComponent<Camera>(entity));
+		ECS::GetComponent<HorizontalScroll>(entity).SetOffset(15.f);
+		ECS::GetComponent<VerticalScroll>(entity).SetCam(&ECS::GetComponent<Camera>(entity));
+		ECS::GetComponent<VerticalScroll>(entity).SetOffset(15.f);
+
 		//set up identitier
-		unsigned int bitHolder = EntityIdentifier::CameraBit();
-		ECS::SetUpIdentifier(entity, bitHolder, "Main Camera");
+		unsigned int bitHolder = EntityIdentifier::VertScrollCameraBit() | EntityIdentifier::HoriScrollCameraBit() | EntityIdentifier::CameraBit();
+		ECS::SetUpIdentifier(entity, bitHolder, "Scrolling Camera");
 		ECS::SetIsMainCamera(entity, true);
 	}
 	//Controller sign
@@ -71,7 +77,6 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 		auto attacks = File::LoadJSON("LinkAttacks.json");
 
 		auto entity = ECS::CreateEntity();
-		m_entityLink = entity;
 
 		//add components
 		ECS::AttachComponent<Sprite>(entity);
@@ -96,6 +101,7 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 		//set up identitier
 		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit() | EntityIdentifier::AnimationBit();
 		ECS::SetUpIdentifier(entity, bitHolder, "link");
+		ECS::SetIsMainPlayer(entity, true);
 	}
 	//WASD sign
 	{
@@ -138,14 +144,18 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit() | EntityIdentifier::AnimationBit();
 		ECS::SetUpIdentifier(entity, bitHolder, "WASD Sign");
 	}
-}
 
-int Challenge::GetLink() {
-	return m_entityLink;
+	//EntityIdentifier::MainPlayer()
+	ECS::GetComponent<HorizontalScroll>(EntityIdentifier::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(EntityIdentifier::MainPlayer()));
+	ECS::GetComponent<VerticalScroll>(EntityIdentifier::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(EntityIdentifier::MainPlayer()));
 }
 
 void Challenge::SetAnim(int anim) {
-	auto entity = m_entityLink;
-	auto& animController = ECS::GetComponent<AnimationController>(entity);
+	auto& animController = m_sceneReg->get<AnimationController>(EntityIdentifier::MainPlayer());
 	animController.SetActiveAnim(anim);
+}
+
+int Challenge::GetAnim() {
+	auto& animController = m_sceneReg->get<AnimationController>(EntityIdentifier::MainPlayer());
+	return animController.GetActiveAnim();
 }

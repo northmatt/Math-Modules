@@ -1,5 +1,8 @@
 #include "EffectManager.h"
 
+Selectable EffectManager::m_selectable = Selectable("Effect Editor");
+Selectable EffectManager::m_funSettings = Selectable("Fun Settings");
+
 int EffectManager::m_numEffects = 0;
 bool EffectManager::m_effectsInit = false;
 
@@ -49,6 +52,101 @@ EffectManager::~EffectManager()
 			delete m_effects[i];
 			//Set it to nullptr
 			m_effects[i] = nullptr;
+		}
+	}
+}
+
+void EffectManager::CreateTab(Selectable &s1, int ind) {
+	bool temp = false;
+
+	if (ImGui::BeginTabItem(s1.GetName().c_str(), s1.GetSelected())) {
+		temp = true;
+
+		ImGui::EndTabItem();
+	}
+
+	if (temp)
+		CreateEditor(ind);
+}
+
+void EffectManager::CreateTabs() {
+	CreateTab(m_selectable, 1);
+	CreateTab(m_funSettings, 2);
+}
+
+void EffectManager::CreateEditor(int index) {
+	if (m_selectable.GetSelected() && index == 1) {
+		if (ImGui::TreeNode("Sepia Effect")) {
+			if (m_sepia != -1) {
+				SepiaEffect* temp = (SepiaEffect*)EffectManager::GetEffect(m_sepia);
+				float intensity = temp->GetIntensity();
+
+				ImGui::Text("Currently attached");
+
+				if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.f, 1.f))
+					temp->SetIntensity(intensity);
+
+				if (ImGui::Button("Remove Effect", ImVec2(100.f, 20.f)))
+					EffectManager::RemoveEffect(m_sepia);
+			} else {
+				ImGui::Text("None attached");
+
+				if (ImGui::Button("Add Effect", ImVec2(100.f, 20.f)))
+					EffectManager::CreateEffect(Sepia, BackEnd::GetWindowWidth(), BackEnd::GetWindowHeight());
+			}
+
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("Noise Effect")) {
+			if (m_grain != -1) {
+				GrainEffect* temp2 = (GrainEffect*)EffectManager::GetEffect(m_grain);
+				float strength = temp2->GetStrength();
+
+				ImGui::Text("Currently attached");
+
+				if (ImGui::DragFloat("Strength", &strength, 1.f, 0.f, 100.f))
+					temp2->SetStrength(strength);
+
+				if (ImGui::Button("Remove Effect", ImVec2(100.f, 20.f)))
+					EffectManager::RemoveEffect(m_grain);
+			} else {
+				ImGui::Text("None attached");
+
+				if (ImGui::Button("Add Effect", ImVec2(100.f, 20.f)))
+					EffectManager::CreateEffect(Grain, BackEnd::GetWindowWidth(), BackEnd::GetWindowHeight());
+			}
+
+			ImGui::TreePop();
+		}
+	}
+
+	if (m_funSettings.GetSelected() && index == 2) {
+		if (ImGui::TreeNode("Animations")) {
+			auto& animController = ECS::GetComponent<AnimationController>(EntityIdentifier::MainPlayer());
+
+			int currAnim = animController.GetActiveAnim();
+
+			if (ImGui::DragInt("Intensity", &currAnim, 1, 0, 1))
+				animController.SetActiveAnim(currAnim);
+
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("Transform")) {
+			auto& trans = ECS::GetComponent<Transform>(EntityIdentifier::MainPlayer());
+			float pos[3]{ trans.GetPositionX(), trans.GetPositionY(), trans.GetPositionZ() };
+			auto rot = (trans.GetRotationAngleZ() * 180) / PI;
+
+			//pi degrees = d*PI/180
+			//PID * 180 / PI = d
+			if (ImGui::DragFloat3("Position", pos, 1.f, -500.f, 500.f))
+				trans.SetPosition( {pos[0], pos[1], pos[2]} );
+
+			if (ImGui::DragFloat("Rotation", &rot, 1.f, -360.f, 360.f))
+				trans.SetRotationAngleZ(rot * (PI / 180));
+
+			ImGui::TreePop();
 		}
 	}
 }
