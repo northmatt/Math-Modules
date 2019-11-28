@@ -86,8 +86,8 @@ bool Game::Run()
 		Transform& trans = m_register->get<Transform>(sceneChallenge->GetAutoLink());
 		AnimationController& anim = m_register->get<AnimationController>(sceneChallenge->GetAutoLink());
 
-		if (!(-50 <= trans.GetPositionX() && trans.GetPositionX() <= 50))
-			anim.SetActiveAnim(anim.GetActiveAnim() == 1 ? 0 : 1);
+		if (!(-50 < trans.GetPositionX() && trans.GetPositionX() < 50))
+			anim.SetActiveAnim(trans.GetPositionX() > 0 ? 0 : 1);
 
 		vec3 velocity = vec3(anim.GetActiveAnim() * 2 - 1, 0, 0);
 		velocity.Normailize();

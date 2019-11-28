@@ -105,10 +105,8 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 		ECS::SetUpIdentifier(entity, bitHolder, "link");
 		ECS::SetIsMainPlayer(entity, true);
 	}
-	//auto link sprite	anim 1.1
+	//auto link sprite	anim 2
 	{
-		auto attacks = File::LoadJSON("LinkAttacks.json");
-
 		auto entity = ECS::CreateEntity();
 
 		//add components
@@ -117,26 +115,56 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 		ECS::AttachComponent<AnimationController>(entity);
 
 		//sets up components
-		std::string fileName = "spritesheets/LinkAttacks.png";
+		std::string fileName = "spritesheets/LinkWalkWalking.png";
 		auto& animController = ECS::GetComponent<AnimationController>(entity);
 		animController.InitUVs(fileName);
+		//Add first anim
+		animController.AddAnimation(Animation());
+		animController.AddAnimation(Animation());
 
-		//Add anims
-		animController.AddAnimation(attacks["left"]);
-		animController.AddAnimation(attacks["right"]);
+		{
+			//get first anim
+			auto& anim = animController.GetAnimation(0);
+			anim.AddFrame(vec2(1.f, 25.f), vec2(18.f, 1.f));
+			anim.AddFrame(vec2(20.f, 25.f), vec2(37.f, 1.f));
+			anim.AddFrame(vec2(39.f, 25.f), vec2(56.f, 1.f));
+			anim.AddFrame(vec2(58.f, 25.f), vec2(75.f, 1.f));
+			anim.AddFrame(vec2(77.f, 25.f), vec2(94.f, 1.f));
+			anim.AddFrame(vec2(96.f, 25.f), vec2(113.f, 1.f));
+			anim.AddFrame(vec2(115.f, 25.f), vec2(132.f, 1.f));
+			anim.AddFrame(vec2(134.f, 25.f), vec2(151.f, 1.f));
+
+			anim.SetRepeating(true);
+			anim.SetSecPerFrame(0.08f);
+		}
+		{
+			//get 2nd anim
+			auto& anim = animController.GetAnimation(1);
+			anim.AddFrame(vec2(1.f, 51.f), vec2(18.f, 27.f));
+			anim.AddFrame(vec2(20.f, 51.f), vec2(37.f, 27.f));
+			anim.AddFrame(vec2(39.f, 51.f), vec2(56.f, 27.f));
+			anim.AddFrame(vec2(58.f, 51.f), vec2(75.f, 27.f));
+			anim.AddFrame(vec2(77.f, 51.f), vec2(94.f, 27.f));
+			anim.AddFrame(vec2(96.f, 51.f), vec2(113.f, 27.f));
+			anim.AddFrame(vec2(115.f, 51.f), vec2(132.f, 27.f));
+			anim.AddFrame(vec2(134.f, 51.f), vec2(151.f, 27.f));
+
+			anim.SetRepeating(true);
+			anim.SetSecPerFrame(0.08f);
+		}
 
 		animController.SetActiveAnim(1);
 
-		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 100, 100, true, &animController);
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 28, 36, true, &animController);
 
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(0.f, 0.f, 100.f));
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(0.f, 0.f, 90.f));
 
 		//set up identitier
 		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit() | EntityIdentifier::AnimationBit();
 		ECS::SetUpIdentifier(entity, bitHolder, "link Auto");
 		autoLinkEnt = entity;
 	}
-	//WASD sign			anim 2
+	//WASD sign			anim 3
 	{
 		auto entity = ECS::CreateEntity();
 
