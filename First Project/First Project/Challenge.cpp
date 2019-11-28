@@ -38,6 +38,24 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 		ECS::SetUpIdentifier(entity, bitHolder, "Scrolling Camera");
 		ECS::SetIsMainCamera(entity, true);
 	}
+	//background
+	{
+		auto entity = ECS::CreateEntity();
+
+		//add components
+		ECS::AttachComponent<Sprite>(entity);
+		ECS::AttachComponent<Transform>(entity);
+
+		//sets up components
+		std::string fileName = "Background.png";
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 500, 224);
+
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(-25.f, 80.f, 0.f));
+
+		//set up identitier
+		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit();
+		ECS::SetUpIdentifier(entity, bitHolder, "Background");
+	}
 	//Controller sign
 	{
 		auto entity = ECS::CreateEntity();
@@ -48,9 +66,9 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 
 		//sets up components
 		std::string fileName = "Controller.png";
-		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 100, 50);
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 61, 24);
 
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(35.f, 15.f, 0.5f));
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(67, 91.f, 0.5f));
 
 		//set up identitier
 		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit();
@@ -66,9 +84,9 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 
 		//sets up components
 		std::string fileName = "HelloWorld.png";
-		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 100, 50);
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 50, 25);
 
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(-25.f, -25.f, 0.f));
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(-74.f, 90.f, 10.f));
 
 		//set up identitier
 		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit();
@@ -98,12 +116,70 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 
 		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 100, 100, true, &animController);
 
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(0.f, 0.f, 100.f));
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(0.f, 50.f, 100.f));
 
 		//set up identitier
 		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit() | EntityIdentifier::AnimationBit();
 		ECS::SetUpIdentifier(entity, bitHolder, "link");
 		ECS::SetIsMainPlayer(entity, true);
+	}
+	{
+		auto attacks = File::LoadJSON("LinkAttacks.json");
+
+		auto entity = ECS::CreateEntity();
+
+		//add components
+		ECS::AttachComponent<Sprite>(entity);
+		ECS::AttachComponent<Transform>(entity);
+		ECS::AttachComponent<AnimationController>(entity);
+
+		//sets up components
+		std::string fileName = "spritesheets/LinkAttacks.png";
+		auto& animController = ECS::GetComponent<AnimationController>(entity);
+		animController.InitUVs(fileName);
+
+		//Add anims
+		animController.AddAnimation(attacks["left"]);
+		animController.AddAnimation(attacks["right"]);
+
+		animController.SetActiveAnim(1);
+
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 100, 100, true, &animController);
+
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(-71.f, -5.f, 100.f));
+
+		//set up identitier
+		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit() | EntityIdentifier::AnimationBit();
+		ECS::SetUpIdentifier(entity, bitHolder, "linkLeft");
+	}
+	{
+		auto attacks = File::LoadJSON("LinkAttacks.json");
+
+		auto entity = ECS::CreateEntity();
+
+		//add components
+		ECS::AttachComponent<Sprite>(entity);
+		ECS::AttachComponent<Transform>(entity);
+		ECS::AttachComponent<AnimationController>(entity);
+
+		//sets up components
+		std::string fileName = "spritesheets/LinkAttacks.png";
+		auto& animController = ECS::GetComponent<AnimationController>(entity);
+		animController.InitUVs(fileName);
+
+		//Add anims
+		animController.AddAnimation(attacks["left"]);
+		animController.AddAnimation(attacks["right"]);
+
+		animController.SetActiveAnim(0);
+
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 100, 100, true, &animController);
+
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(97.f, -5.f, 100.f));
+
+		//set up identitier
+		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit() | EntityIdentifier::AnimationBit();
+		ECS::SetUpIdentifier(entity, bitHolder, "linkRight");
 	}
 	//auto link sprite	anim 2
 	{
@@ -197,9 +273,9 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 		anim.SetRepeating(true);
 		anim.SetSecPerFrame(0.08f);
 
-		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 107, 45, true, &animController);
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 70, 20, true, &animController);
 
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(-15.f, 60.f, 1.f));
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(-9.f, 93.f, 1.f));
 
 		//set up identitier
 		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit() | EntityIdentifier::AnimationBit();

@@ -28,7 +28,10 @@ void Game::InitGame()
 {
 	//Scene names and clear colors
 	m_name = "Hello World";
-	m_clearColor = vec4(0.15f, 0.33f, 0.58f, 1.f);
+	m_clearColor = vec4(0.23137f, 0.18824f, 0.25098f, 1.f);
+	//0.23137
+	//0.18824
+	//0.25098
 
 	//Initializes the backend
 	BackEnd::InitBackEnd(m_name);
@@ -252,10 +255,19 @@ void Game::KeyboardHold()
 
 		acceleration = acceleration * Timer::deltaTime;
 
+		if (Input::GetKeyDown(Key::Space)) {
+			acceleration.y += 100;
+		}
+
 		m_velocity.x = min(max(m_velocity.x + (acceleration.x), -21), 21);
 		m_velocity.y = min(max(m_velocity.y + (acceleration.y), -21), 21);
 
 		tran.SetPosition(tran.GetPosition() + (m_velocity + acceleration * 0.5f) * Timer::deltaTime);
+
+		if (tran.GetPositionY() < -10) {
+			tran.SetPositionY(-10);
+			m_velocity.y = 0;
+		}
 	//}
 		if (Input::GetKey(Key::R)) {
 			vec2 test = { mosPos.x - BackEnd::GetWindowWidth() / 2, mosPos.y - BackEnd::GetWindowHeight() / 2 };
