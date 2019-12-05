@@ -13,6 +13,8 @@ public:
 	int GetAnim();
 	unsigned int GetAutoLink();
 
+	void createCrate(float32 posX, float32 posY, bool isMain);
+
 	//ImGUI Editor
 	void CreateTab();
 	void CreateEditor();

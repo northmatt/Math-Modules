@@ -87,18 +87,6 @@ bool Game::Run()
 			//Accept all input
 			AcceptInput();
 		}
-
-		Transform& trans = m_register->get<Transform>(sceneChallenge->GetAutoLink());
-		AnimationController& anim = m_register->get<AnimationController>(sceneChallenge->GetAutoLink());
-
-		if (!(-50 < trans.GetPositionX() && trans.GetPositionX() < 50))
-			anim.SetActiveAnim(trans.GetPositionX() > 0 ? 0 : 1);
-
-		vec3 velocity = vec3(anim.GetActiveAnim() * 2 - 1, 0, 0);
-		velocity.Normailize();
-		velocity = velocity * (50 * Timer::deltaTime);
-
-		trans.SetPosition(trans.GetPosition() + velocity);
 	}
 
 	return true;
@@ -226,6 +214,24 @@ void Game::GamepadTrigger(XInputController* con) {
 
 void Game::KeyboardHold()
 {
+	float speed = 16000;
+	auto& PhyBod = m_register->get<PhysicsBody>(EntityIdentifier::MainPlayer());
+	vec3 simpleVec{ 0, 0, 0 };
+
+	if (Input::GetKey(Key::A))
+		simpleVec.x -= 1;
+	if (Input::GetKey(Key::D))
+		simpleVec.x += 1;
+	
+	if (Input::GetKey(Key::W))
+		simpleVec.y += 1;
+	if (Input::GetKey(Key::S))
+		simpleVec.y -= 1;
+
+	simpleVec.Normailize();
+
+	PhyBod.ApplyForce(simpleVec * speed);
+
 	//Keyboard button held
 	//if (Input::GetKey(Key::A) || Input::GetKey(Key::S) || Input::GetKey(Key::D) || Input::GetKey(Key::W)) {
 		/*float speed = 80;
@@ -274,10 +280,6 @@ void Game::KeyboardHold()
 
 void Game::KeyboardDown()
 {
-	if (Input::GetKeyDown(Key::A))
-		sceneChallenge->SetAnim(0);
-	else if (Input::GetKeyDown(Key::D))
-		sceneChallenge->SetAnim(1);
 	if (Input::GetKeyDown(Key::P))
 		PhysicsBody::SetDraw(!PhysicsBody::GetDraw());
 }
