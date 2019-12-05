@@ -97,7 +97,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>./lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32s.lib;glew32.lib;SDL2main.lib;SDL2test.lib;SDL2.lib;SOIL_ext.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32s.lib;glew32.lib;SDL2main.lib;SDL2test.lib;SDL2.lib;SOIL_ext.lib;opengl32.lib;Box2D.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -159,6 +159,7 @@
     <ClInclude Include="JSON.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="PhysicsBody.h" />
+    <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="PixelateEffect.h" />
     <ClInclude Include="PostEffect.h" />
     <ClInclude Include="RenderingSystem.h" />
@@ -209,6 +210,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="PhysicsBody.cpp" />
+    <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PixelateEffect.cpp" />
     <ClCompile Include="PostEffect.cpp" />
     <ClCompile Include="RenderingSystem.cpp" />

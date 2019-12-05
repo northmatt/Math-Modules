@@ -54,6 +54,8 @@ void Game::InitGame()
 	m_register = m_activeScene->GetScene();
 
 	sceneChallenge = (Challenge*)m_activeScene;
+
+	PhysicsSystem::Init();
 }
 
 bool Game::Run()
@@ -108,6 +110,8 @@ void Game::Update()
 	Timer::Update();
 	//Update the backend
 	BackEnd::Update(m_register);
+
+	PhysicsSystem::Update(m_register, m_activeScene->GetPhysicsWorld());
 }
 
 void Game::GUI()
@@ -224,7 +228,7 @@ void Game::KeyboardHold()
 {
 	//Keyboard button held
 	//if (Input::GetKey(Key::A) || Input::GetKey(Key::S) || Input::GetKey(Key::D) || Input::GetKey(Key::W)) {
-		float speed = 80;
+		/*float speed = 80;
 		auto& tran = m_register->get<Transform>(EntityIdentifier::MainPlayer());
 		vec3 simpleVec{ 0, 0, 0 };
 
@@ -238,13 +242,6 @@ void Game::KeyboardHold()
 		if (Input::GetKey(Key::S))
 			simpleVec.y -= 1;
 
-		/*float simMag = simpleVec.GetMagnitude();
-		if (simMag != 0) {
-			simpleVec = simpleVec / simMag;
-			simpleVec = simpleVec * (speed * Timer::deltaTime);
-
-			tran.SetPosition(tran.GetPosition() + simpleVec);
-		}*/
 		simpleVec.Normailize();
 
 		//Force of gravity = mass * gravity. how could you miss that?
@@ -272,7 +269,7 @@ void Game::KeyboardHold()
 		if (Input::GetKey(Key::R)) {
 			vec2 test = { mosPos.x - BackEnd::GetWindowWidth() / 2, mosPos.y - BackEnd::GetWindowHeight() / 2 };
 			tran.SetRotationAngleZ(atan2(test.x, test.y));
-		}
+		}*/
 }
 
 void Game::KeyboardDown()
@@ -281,6 +278,8 @@ void Game::KeyboardDown()
 		sceneChallenge->SetAnim(0);
 	else if (Input::GetKeyDown(Key::D))
 		sceneChallenge->SetAnim(1);
+	if (Input::GetKeyDown(Key::P))
+		PhysicsBody::SetDraw(!PhysicsBody::GetDraw());
 }
 
 void Game::KeyboardUp()

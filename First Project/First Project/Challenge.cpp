@@ -1,6 +1,9 @@
 #include "Challenge.h"
 
-Challenge::Challenge(std::string name) : Scene(name) {}
+Challenge::Challenge(std::string name) : Scene(name) {
+	m_gravity = b2Vec2(float32(0.f), float32(-9.f));
+	m_physicsWorld->SetGravity(m_gravity);
+}
 
 void Challenge::InitScene(float windowWidth, float windowHeight) {
 	//Dynamically allocates register
@@ -45,6 +48,7 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 		//add components
 		ECS::AttachComponent<Sprite>(entity);
 		ECS::AttachComponent<Transform>(entity);
+		ECS::AttachComponent<PhysicsBody>(entity);
 
 		//sets up components
 		std::string fileName = "Background.png";
@@ -52,8 +56,24 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 
 		ECS::GetComponent<Transform>(entity).SetPosition(vec3(-25.f, 80.f, 0.f));
 
+		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+		auto& tempPhiBody = ECS::GetComponent<PhysicsBody>(entity);
+
+		float shrinkX{ 0.f };
+		float shrinkY{ tempSpr.GetHeight() / 1.5f };
+
+		b2Body* tempBody;
+		b2BodyDef tempDef;
+		tempDef.type = b2_staticBody;
+		tempDef.position.Set(float32(0.f), float32(0.f));
+
+		tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+		tempPhiBody = PhysicsBody(tempBody, float(tempSpr.GetWidth()) - shrinkX, float(tempSpr.GetHeight()) - shrinkY, 
+			vec2(0.f, (-tempSpr.GetHeight() / 16.f) * 6.f), false);
+
 		//set up identitier
-		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit();
+		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit() | EntityIdentifier::PhysicsBit();
 		ECS::SetUpIdentifier(entity, bitHolder, "Background");
 	}
 	//Controller sign
@@ -102,6 +122,7 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 		ECS::AttachComponent<Sprite>(entity);
 		ECS::AttachComponent<Transform>(entity);
 		ECS::AttachComponent<AnimationController>(entity);
+		ECS::AttachComponent<PhysicsBody>(entity);
 
 		//sets up components
 		std::string fileName = "spritesheets/LinkAttacks.png";
@@ -116,10 +137,30 @@ void Challenge::InitScene(float windowWidth, float windowHeight) {
 
 		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 100, 100, true, &animController);
 
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(0.f, 50.f, 100.f));
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(0.f, 150.f, 100.f));
+
+		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+		auto& tempPhiBody = ECS::GetComponent<PhysicsBody>(entity);
+
+		float shrinkX = tempSpr.GetWidth() / 2.f;
+		float shrinkY =  tempSpr.GetWidth() / 2.f;
+
+		b2Body* tempBody;
+		b2BodyDef tempDef;
+		tempDef.type = b2_dynamicBody;
+		tempDef.position.Set(float32(0.f), float32(50.f));
+
+		tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+		tempPhiBody = PhysicsBody(tempBody, float(tempSpr.GetWidth()) - shrinkX, float(tempSpr.GetHeight()) - shrinkY,
+			vec2(-10.f, 0.f), false);
+
+		tempPhiBody.SetFriction(0.15f);
+		tempPhiBody.SetMaxVelo(60.f);
+		tempPhiBody.SetApplyGravity(true);
 
 		//set up identitier
-		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit() | EntityIdentifier::AnimationBit();
+		unsigned int bitHolder = EntityIdentifier::SpriteBit() | EntityIdentifier::TransformBit() | EntityIdentifier::AnimationBit() | EntityIdentifier::PhysicsBit();
 		ECS::SetUpIdentifier(entity, bitHolder, "link");
 		ECS::SetIsMainPlayer(entity, true);
 	}

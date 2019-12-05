@@ -1,7 +1,10 @@
 #pragma once
 
+#include <GL/glew.h>
+#include <Box2D/Box2D.h>
 #include "JSON.h"
 #include "Vector.h"
+#include "VertexManager.h"
 #include "EntityIdentifier.h"
 #include "Transform.h"
 
@@ -27,18 +30,25 @@ class PhysicsBody {
 public:
 	PhysicsBody() {}
 
+	PhysicsBody(b2Body* body, float radius, vec2 centerOffset, bool isDynamic);
+	PhysicsBody(b2Body* body, float width, float height, vec2 centerOffset, bool isDynamic);
+
+	void Update(Transform* trans);
+
 	//The bottom/top corner of the physics body, relative to the sprite
 	//object specifier is the collision ID object that the physics body is attached to
 	//collidesWith is the ID(s) of the object(s) that this physics body will actually collide with (use | to combine 2+)
 	//isDynamic = is object moving {only objects that move actually need to check collisions with the other objects}
-	PhysicsBody(vec2 botLeft, vec2 topRight, vec2 centerOffset, unsigned int objectSpecifier, unsigned int collidesWith, bool isDynamic = false);
+	/*PhysicsBody(vec2 botLeft, vec2 topRight, vec2 centerOffset, unsigned int objectSpecifier, unsigned int collidesWith, bool isDynamic = false);
 	PhysicsBody(float width, float height, vec2 centerOffset, unsigned int objectSpecifier, unsigned int collidesWith, bool isDynamic = false);
 	PhysicsBody(float radius, vec2 centerOffset, unsigned int objectSpecifier, unsigned int collidesWith, bool isDynamic = false);
 
-	void Update(Transform* trans, float dt);
+	void Update(Transform* trans, float dt);*/
 
 	void ApplyForce(vec3 force);
 
+	void InitBody();
+	void DrawBody();
 
 
 	vec3 GetAppliedForce() const { return m_appliedForce; }
@@ -74,6 +84,11 @@ public:
 	//is object moving
 	bool GetDynamic() const { return m_dynamic; }
 
+	static bool GetDraw() { return m_drawBodies; }
+
+	b2Body* GetBody() { return m_body; }
+	b2Vec2 GetPosition() const { return m_position; }
+
 
 
 	void SetAppliedForce(vec3 _appForce) { m_appliedForce = _appForce; }
@@ -108,7 +123,15 @@ public:
 
 	//is object moving
 	void SetDynamic(bool _dynamic) { m_dynamic = _dynamic; }
+
+	static void SetDraw(bool drawBodies) { m_drawBodies = drawBodies; }
+
+	void SetBody(b2Body* body) { m_body = body; }
+	void SetPosition(b2Vec2 bodyPos) { m_position = bodyPos; }
 private:
+	b2Body* m_body = nullptr;
+	b2Vec2 m_position = b2Vec2(0.f, 0.f);
+
 	vec3 m_appliedForce = vec3(0.f, 0.f, 0.f);
 	vec3 m_frictionForce = vec3(0.f, 0.f, 0.f);
 	vec3 m_netForce = vec3(0.f, 0.f, 0.f);
@@ -141,9 +164,16 @@ private:
 
 	//is object moving
 	bool m_dynamic = false;
+
+	static bool m_drawBodies;
+	GLuint m_vao = GL_NONE;
+	GLuint m_vboPos = GL_NONE;
 };
 
 inline void to_json(nlohmann::json& j, const PhysicsBody& phys) {
+	j["BodyPos"] = { phys.GetPosition().x, phys.GetPosition().y };
+	j["BodyType"] = phys.GetBodyType();
+
 	j["MaxVelo"] = phys.GetMaxVelo();
 	
 	j["Friction"] = phys.GetFriction();
@@ -172,6 +202,9 @@ inline void to_json(nlohmann::json& j, const PhysicsBody& phys) {
 }
 
 inline void from_json(const nlohmann::json& j, PhysicsBody& phys) {
+	phys.SetPosition(b2Vec2(float32(j["BodyPos"][0]), float32(j["BodyPos"][1])));
+	phys.SetBodyType(j["BodyType"]);
+
 	phys.SetMaxVelo(j["MaxVelo"]);
 
 	phys.SetFriction(j["Friction"]);
